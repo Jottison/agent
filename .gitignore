@@ -2,4 +2,4 @@ venv/
 __pycache__/
 .ropeproject/
 *.env 
-COPY.txt
+*.txt

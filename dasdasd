@@ -1,0 +1,389 @@
+[33mcommit f30b7881438506de4e74dca40260a56afc95fecc[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m)[m
+Author: Jottison <jandavid.schulz@googlemail.com>
+Date:   Tue Jun 10 17:20:24 2025 +0200
+
+    Read and update/create files or directorys
+
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex dca6b1b..af0dbb5 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -1,4 +1,5 @@[m
+ venv/[m
+ __pycache__/[m
+ .ropeproject/[m
+[31m-*.env [m
+\ No newline at end of file[m
+[32m+[m[32m*.env[m[41m [m
+[32m+[m[32mCOPY.txt[m
+\ No newline at end of file[m
+[1mdiff --git a/COPY.txt b/COPY.txt[m
+[1mindex 4d17e05..e69de29 100644[m
+[1m--- a/COPY.txt[m
+[1m+++ b/COPY.txt[m
+[36m@@ -1,43 +0,0 @@[m
+[31m-import os[m
+[31m-from dotenv import load_dotenv[m
+[31m-from google import genai[m
+[31m-import sys[m
+[31m-from google.genai import types[m
+[31m-[m
+[31m-def main():[m
+[31m-    verbose = False[m
+[31m-    args = sys.argv[1:][m
+[31m-[m
+[31m-    if not args:[m
+[31m-        print("AI Code Assistant")[m
+[31m-        print('\nUsage: python main.py "your prompt here"')[m
+[31m-        print('Example: python main.py "How do I build a calculator app?"')[m
+[31m-        sys.exit(1)[m
+[31m-    if args[-1] == "--verbose":[m
+[31m-        verbose = True[m
+[31m-        args.pop()[m
+[31m-    user_prompt = " ".join(args)[m
+[31m-    load_dotenv()[m
+[31m-    [m
+[31m-    api_key = os.environ.get("GEMINI_API_KEY")[m
+[31m-    client = genai.Client(api_key=api_key)[m
+[31m-[m
+[31m-    messages = [[m
+[31m-        types.Content(role="user", parts=[types.Part(text=user_prompt)]),][m
+[31m-    [m
+[31m-    [m
+[31m-    response = client.models.generate_content([m
+[31m-            model="gemini-2.0-flash-001",[m
+[31m-            contents=messages,)[m
+[31m-        [m
+[31m-    if verbose:[m
+[31m-            print("User prompt: "+ user_prompt)[m
+[31m-            print("Prompt tokens:", response.usage_metadata.prompt_token_count)[m
+[31m-            print("Response tokens:", response.usage_metadata.candidates_token_count)[m
+[31m-    print("Response:")[m
+[31m-    print(response.text)   [m
+[31m-    [m
+[31m-        [m
+[31m-[m
+[31m-if __name__ == "__main__":[m
+[31m-    main()[m
+\ No newline at end of file[m
+[1mdiff --git a/calculator/lorem.txt b/calculator/lorem.txt[m
+[1mnew file mode 100644[m
+[1mindex 0000000..900ea57[m
+[1m--- /dev/null[m
+[1m+++ b/calculator/lorem.txt[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32mwait, this isn't lorem ipsum[m
+\ No newline at end of file[m
+[1mdiff --git a/calculator/main.py b/calculator/main.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..bf2361b[m
+[1m--- /dev/null[m
+[1m+++ b/calculator/main.py[m
+[36m@@ -0,0 +1,26 @@[m
+[32m+[m[32m# main.py[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mimport sys[m[41m[m
+[32m+[m[32mfrom pkg.calculator import Calculator[m[41m[m
+[32m+[m[32mfrom pkg.render import render[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mdef main():[m[41m[m
+[32m+[m[32m    calculator = Calculator()[m[41m[m
+[32m+[m[32m    if len(sys.argv) <= 1:[m[41m[m
+[32m+[m[32m        print("Calculator App")[m[41m[m
+[32m+[m[32m        print('Usage: python main.py "<expression>"')[m[41m[m
+[32m+[m[32m        print('Example: python main.py "3 + 5"')[m[41m[m
+[32m+[m[32m        return[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    expression = " ".join(sys.argv[1:])[m[41m[m
+[32m+[m[32m    try:[m[41m[m
+[32m+[m[32m        result = calculator.evaluate(expression)[m[41m[m
+[32m+[m[32m        to_print = render(expression, result)[m[41m[m
+[32m+[m[32m        print(to_print)[m[41m[m
+[32m+[m[32m    except Exception as e:[m[41m[m
+[32m+[m[32m        print(f"Error: {e}")[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mif __name__ == "__main__":[m[41m[m
+[32m+[m[32m    main()[m
+\ No newline at end of file[m
+[1mdiff --git a/calculator/pkg/calculator.py b/calculator/pkg/calculator.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..07aac8b[m
+[1m--- /dev/null[m
+[1m+++ b/calculator/pkg/calculator.py[m
+[36m@@ -0,0 +1,61 @@[m
+[32m+[m[32m# calculator.py[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mclass Calculator:[m[41m[m
+[32m+[m[32m    def __init__(self):[m[41m[m
+[32m+[m[32m        self.operators = {[m[41m[m
+[32m+[m[32m            "+": lambda a, b: a + b,[m[41m[m
+[32m+[m[32m            "-": lambda a, b: a - b,[m[41m[m
+[32m+[m[32m            "*": lambda a, b: a * b,[m[41m[m
+[32m+[m[32m            "/": lambda a, b: a / b,[m[41m[m
+[32m+[m[32m        }[m[41m[m
+[32m+[m[32m        self.precedence = {[m[41m[m
+[32m+[m[32m            "+": 1,[m[41m[m
+[32m+[m[32m            "-": 1,[m[41m[m
+[32m+[m[32m            "*": 2,[m[41m[m
+[32m+[m[32m            "/": 2,[m[41m[m
+[32m+[m[32m        }[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def evaluate(self, expression):[m[41m[m
+[32m+[m[32m        if not expression or expression.isspace():[m[41m[m
+[32m+[m[32m            return None[m[41m[m
+[32m+[m[32m        tokens = expression.strip().split()[m[41m[m
+[32m+[m[32m        return self._evaluate_infix(tokens)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def _evaluate_infix(self, tokens):[m[41m[m
+[32m+[m[32m        values = [][m[41m[m
+[32m+[m[32m        operators = [][m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        for token in tokens:[m[41m[m
+[32m+[m[32m            if token in self.operators:[m[41m[m
+[32m+[m[32m                while ([m[41m[m
+[32m+[m[32m                    operators[m[41m[m
+[32m+[m[32m                    and operators[-1] in self.operators[m[41m[m
+[32m+[m[32m                    and self.precedence[operators[-1]] >= self.precedence[token][m[41m[m
+[32m+[m[32m                ):[m[41m[m
+[32m+[m[32m                    self._apply_operator(operators, values)[m[41m[m
+[32m+[m[32m                operators.append(token)[m[41m[m
+[32m+[m[32m            else:[m[41m[m
+[32m+[m[32m                try:[m[41m[m
+[32m+[m[32m                    values.append(float(token))[m[41m[m
+[32m+[m[32m                except ValueError:[m[41m[m
+[32m+[m[32m                    raise ValueError(f"invalid token: {token}")[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        while operators:[m[41m[m
+[32m+[m[32m            self._apply_operator(operators, values)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        if len(values) != 1:[m[41m[m
+[32m+[m[32m            raise ValueError("invalid expression")[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        return values[0][m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def _apply_operator(self, operators, values):[m[41m[m
+[32m+[m[32m        if not operators:[m[41m[m
+[32m+[m[32m            return[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        operator = operators.pop()[m[41m[m
+[32m+[m[32m        if len(values) < 2:[m[41m[m
+[32m+[m[32m            raise ValueError(f"not enough operands for operator {operator}")[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        b = values.pop()[m[41m[m
+[32m+[m[32m        a = values.pop()[m[41m[m
+[32m+[m[32m        values.append(self.operators[operator](a, b))[m
+\ No newline at end of file[m
+[1mdiff --git a/calculator/pkg/morelorem.txt b/calculator/pkg/morelorem.txt[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d4e9f4a[m
+[1m--- /dev/null[m
+[1m+++ b/calculator/pkg/morelorem.txt[m
+[36m@@ -0,0 +1 @@[m
+[32m+[m[32mlorem ipsum dolor sit amet[m
+\ No newline at end of file[m
+[1mdiff --git a/calculator/pkg/render.py b/calculator/pkg/render.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..d8ba21c[m
+[1m--- /dev/null[m
+[1m+++ b/calculator/pkg/render.py[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32m# render.py[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mdef render(expression, result):[m[41m[m
+[32m+[m[32m    if isinstance(result, float) and result.is_integer():[m[41m[m
+[32m+[m[32m        result_str = str(int(result))[m[41m[m
+[32m+[m[32m    else:[m[41m[m
+[32m+[m[32m        result_str = str(result)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    box_width = max(len(expression), len(result_str)) + 4[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    box = [][m[41m[m
+[32m+[m[32m    box.append("┌" + "─" * box_width + "┐")[m[41m[m
+[32m+[m[32m    box.append([m[41m[m
+[32m+[m[32m        "│" + " " * 2 + expression + " " * (box_width - len(expression) - 2) + "│"[m[41m[m
+[32m+[m[32m    )[m[41m[m
+[32m+[m[32m    box.append("│" + " " * box_width + "│")[m[41m[m
+[32m+[m[32m    box.append("│" + " " * 2 + "=" + " " * (box_width - 3) + "│")[m[41m[m
+[32m+[m[32m    box.append("│" + " " * box_width + "│")[m[41m[m
+[32m+[m[32m    box.append([m[41m[m
+[32m+[m[32m        "│" + " " * 2 + result_str + " " * (box_width - len(result_str) - 2) + "│"[m[41m[m
+[32m+[m[32m    )[m[41m[m
+[32m+[m[32m    box.append("└" + "─" * box_width + "┘")[m[41m[m
+[32m+[m[32m    return "\n".join(box)[m
+\ No newline at end of file[m
+[1mdiff --git a/calculator/tests.py b/calculator/tests.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..40d39ce[m
+[1m--- /dev/null[m
+[1m+++ b/calculator/tests.py[m
+[36m@@ -0,0 +1,49 @@[m
+[32m+[m[32m# tests.py[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mimport unittest[m[41m[m
+[32m+[m[32mfrom pkg.calculator import Calculator[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mclass TestCalculator(unittest.TestCase):[m[41m[m
+[32m+[m[32m    def setUp(self):[m[41m[m
+[32m+[m[32m        self.calculator = Calculator()[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_addition(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("3 + 5")[m[41m[m
+[32m+[m[32m        self.assertEqual(result, 8)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_subtraction(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("10 - 4")[m[41m[m
+[32m+[m[32m        self.assertEqual(result, 6)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_multiplication(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("3 * 4")[m[41m[m
+[32m+[m[32m        self.assertEqual(result, 12)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_division(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("10 / 2")[m[41m[m
+[32m+[m[32m        self.assertEqual(result, 5)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_nested_expression(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("3 * 4 + 5")[m[41m[m
+[32m+[m[32m        self.assertEqual(result, 17)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_complex_expression(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("2 * 3 - 8 / 2 + 5")[m[41m[m
+[32m+[m[32m        self.assertEqual(result, 7)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_empty_expression(self):[m[41m[m
+[32m+[m[32m        result = self.calculator.evaluate("")[m[41m[m
+[32m+[m[32m        self.assertIsNone(result)[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_invalid_operator(self):[m[41m[m
+[32m+[m[32m        with self.assertRaises(ValueError):[m[41m[m
+[32m+[m[32m            self.calculator.evaluate("$ 3 5")[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    def test_not_enough_operands(self):[m[41m[m
+[32m+[m[32m        with self.assertRaises(ValueError):[m[41m[m
+[32m+[m[32m            self.calculator.evaluate("+ 3")[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mif __name__ == "__main__":[m[41m[m
+[32m+[m[32m    unittest.main()[m
+\ No newline at end of file[m
+[1mdiff --git a/functions/get_file_content.py b/functions/get_file_content.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..dbcb309[m
+[1m--- /dev/null[m
+[1m+++ b/functions/get_file_content.py[m
+[36m@@ -0,0 +1,23 @@[m
+[32m+[m[32mimport os[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mdef get_file_content(working_directory, file_path):[m[41m[m
+[32m+[m[32m    abs_work_path = os.path.abspath(working_directory)[m[41m[m
+[32m+[m[32m    abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    if not abs_file_path.startswith(abs_work_path):[m[41m[m
+[32m+[m[32m            return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'[m[41m[m
+[32m+[m[32m    if not os.path.isfile(abs_file_path):[m[41m[m
+[32m+[m[32m          return f'Error: File not found or is not a regular file: "{file_path}"'[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    try:[m[41m[m
+[32m+[m[32m        MAX_CHARS = 10000[m[41m[m
+[32m+[m[32m        with open(abs_file_path, "r") as f:[m[41m[m
+[32m+[m[32m                file_content_string = f.read(MAX_CHARS)[m[41m[m
+[32m+[m[41m        [m
+[32m+[m[32m        if len(file_content_string)>=MAX_CHARS:[m[41m[m
+[32m+[m[32m              return file_content_string + f"\n[...File {abs_file_path} truncated at {MAX_CHARS} characters]"[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        return file_content_string[m[41m[m
+[32m+[m[41m          [m
+[32m+[m[32m    except Exception as e:[m[41m[m
+[32m+[m[32m        return f"Error with file: {e}"[m[41m   [m
+\ No newline at end of file[m
+[1mdiff --git a/functions/get_files_info.py b/functions/get_files_info.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..12ab164[m
+[1m--- /dev/null[m
+[1m+++ b/functions/get_files_info.py[m
+[36m@@ -0,0 +1,32 @@[m
+[32m+[m[32mimport os[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mdef get_files_info(working_directory, directory=None):[m[41m[m
+[32m+[m[32m    abs_working_dir = os.path.abspath(working_directory)[m[41m[m
+[32m+[m[32m    target_dir = abs_working_dir[m[41m[m
+[32m+[m[41m    [m
+[32m+[m[32m    if directory:[m[41m[m
+[32m+[m[32m        target_dir = os.path.abspath(os.path.join(working_directory, directory))[m[41m[m
+[32m+[m[32m    if not target_dir.startswith(abs_working_dir):[m[41m[m
+[32m+[m[32m        return f'Error: Cannot list "{directory}" as it is outside the permitted working directory'[m[41m[m
+[32m+[m[32m    if not os.path.isdir(target_dir):[m[41m[m
+[32m+[m[32m        return f'Error: "{directory}" is not a directory'[m[41m    [m
+[32m+[m[41m    [m
+[32m+[m[32m    try:[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m        info = ""[m[41m[m
+[32m+[m[32m        for file in os.listdir(target_dir):[m[41m[m
+[32m+[m[32m            path = os.path.join(target_dir,file)[m[41m[m
+[32m+[m[32m            size=0[m[41m[m
+[32m+[m[32m            is_dir = os.path.isdir(path)[m[41m[m
+[32m+[m[32m            size = os.path.getsize(path)[m[41m[m
+[32m+[m[32m            info += f"- {file}: file_size={size} bytes, is_dir={is_dir}\n"[m[41m[m
+[32m+[m[32m        return info[m[41m[m
+[32m+[m[41m        [m
+[32m+[m[32m    except Exception as e:[m[41m[m
+[32m+[m[32m        return f"Error listing files: {e}"[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m    [m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m  [m
+\ No newline at end of file[m
+[1mdiff --git a/functions/write_file.py b/functions/write_file.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..e0613b7[m
+[1m--- /dev/null[m
+[1m+++ b/functions/write_file.py[m
+[36m@@ -0,0 +1,25 @@[m
+[32m+[m[32mimport os[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mdef write_file(working_directory, file_path, content):[m[41m[m
+[32m+[m[32m    abs_work_path = os.path.abspath(working_directory)[m[41m[m
+[32m+[m[32m    abs_file_path = os.path.abspath(os.path.join(working_directory, file_path))[m[41m                     [m
+[32m+[m[32m    if not abs_file_path.startswith(abs_work_path):[m[41m                   [m
+[32m+[m[32m        return f'Error: Cannot read "{file_path}" as it is outside the permitted working directory'[m[41m[m
+[32m+[m[41m    [m
+[32m+[m[32m    if not os.path.exists(abs_file_path):[m[41m          [m
+[32m+[m[32m        try:[m[41m  [m
+[32m+[m[32m            os.makedirs(os.path.dirname(abs_file_path), exist_ok=True)[m[41m [m
+[32m+[m[32m        except Exception as e:[m[41m[m
+[32m+[m[32m            return f"Error: creating directory: {e}"[m[41m[m
+[32m+[m[41m        [m
+[32m+[m[32m    if os.path.exists(abs_file_path) and os.path.isdir(abs_file_path):[m[41m[m
+[32m+[m[32m        return f'Error: "{file_path}" is a directory, not a file'[m[41m[m
+[32m+[m[41m    [m
+[32m+[m[32m    try:[m[41m[m
+[32m+[m[32m        with open(abs_file_path, "w") as f:[m[41m[m
+[32m+[m[32m            f.write(content)[m[41m[m
+[32m+[m[32m            return f'Successfully wrote to "{file_path}" ({len(content)} characters written)'[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    except Exception as e:[m[41m[m
+[32m+[m[32m        return f"Error: writing to file: {e}"[m[41m   [m
+[1mdiff --git a/tests.py b/tests.py[m
+[1mnew file mode 100644[m
+[1mindex 0000000..08e3c12[m
+[1m--- /dev/null[m
+[1m+++ b/tests.py[m
+[36m@@ -0,0 +1,11 @@[m
+[32m+[m[32mfrom functions.write_file import write_file[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mdef main():[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32m    print(write_file("calculator", "lorem.txt", "wait, this isn't lorem ipsum"))[m[41m[m
+[32m+[m[32m    print(write_file("calculator", "pkg/morelorem.txt", "lorem ipsum dolor sit amet"))[m[41m[m
+[32m+[m[32m    print(write_file("calculator", "/tmp/temp.txt", "this should not be allowed"))[m[41m[m
+[32m+[m[41m[m
+[32m+[m[41m[m
+[32m+[m[32mif __name__ == "__main__":[m[41m[m
+[32m+[m[32m    main()[m
+\ No newline at end of file[m
